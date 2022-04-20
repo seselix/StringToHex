@@ -6,26 +6,55 @@
 
 #include "argparse.h"
 
-void Translate(bool isToHex, const char* filename);
+namespace stx
+{
+
+void Translate(bool isToHex, std::string filename);
 std::string StringToHex(std::string& input);
 std::string HexToString(std::string& input);
 
 //	TODO add a warning before operation happens
 int main(int argc, char* argv[])
 {
-	if (argc != 3)
-	{
-		std::cout << "Require -x or -s and a filename";
-		return EXIT_FAILURE;
-	}
-	std::string command {argv[1]};
-	if (command == "-x" || command == "-s")
-		Translate((command == "-x"), argv[2]);
+	argparse::ArgumentParser program("stx");
+	program.add_argument("-x", "--file_to_hex")
+		.help("Converts [file] text to hexadecimal values. Either '-x' or '-s' is required. Not both")
+		.default_value(false)
+		.implicit_value(true);
+	program.add_argument("-s", "--file_to_string")
+		.help("Converts [file] text to ascii value. Either '-x' or '-s' is required. Not both")
+		.default_value(false)
+		.implicit_value(true);
+	program.add_argument("file")
+		.help("File to be converted")
+		.required();
 
-	std::cout << "Translation success";
+	try {
+		program.parse_args(argc, argv);
+	} catch (const std::runtime_error& err) {
+		std::cerr << err.what() << std::endl;
+		std::cerr << program;
+		std::exit(1);
+	}
+
+	auto filename = program.get<>("file");
+
+	if (program["-x"] == true && program["-s"] == false)
+	{
+		Translate(true, filename); 
+		return EXIT_SUCCESS;
+	}
+	if (program["-s"] == true && program["-x"] == false)
+	{
+		Translate(false, filename); return EXIT_SUCCESS;
+		return EXIT_SUCCESS;
+	}
+	
+	std::cerr << program;
+	return EXIT_FAILURE;
 }
 
-void Translate(bool isToHex, const char* filename)
+void Translate(bool isToHex, std::string filename)
 {
 	std::fstream f;
 	f.open(filename, f.in);
@@ -69,4 +98,6 @@ std::string HexToString(std::string& input)
 	for (int i = 0; i < input.size(); i += 2)
 		ss << (unsigned char)std::stoi(input.substr(i,2), nullptr, 16);
 	return ss.str();
+}
+
 }
