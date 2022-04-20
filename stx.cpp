@@ -1,17 +1,17 @@
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <sstream>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "argparse.h"
 
-namespace stx
+namespace stx //---------------------------------------------------- stx:: <- begin
 {
-
-void Translate(bool isToHex, std::string filename);
+void Translate(bool isToHex, std::string& filename);
 std::string StringToHex(std::string& input);
 std::string HexToString(std::string& input);
+}
 
 //	TODO add a warning before operation happens
 int main(int argc, char* argv[])
@@ -41,12 +41,12 @@ int main(int argc, char* argv[])
 
 	if (program["-x"] == true && program["-s"] == false)
 	{
-		Translate(true, filename); 
+		stx::Translate(true, filename); 
 		return EXIT_SUCCESS;
 	}
 	if (program["-s"] == true && program["-x"] == false)
 	{
-		Translate(false, filename); return EXIT_SUCCESS;
+		stx::Translate(false, filename); return EXIT_SUCCESS;
 		return EXIT_SUCCESS;
 	}
 	
@@ -54,7 +54,10 @@ int main(int argc, char* argv[])
 	return EXIT_FAILURE;
 }
 
-void Translate(bool isToHex, std::string filename)
+namespace stx //---------------------------------------------------- stx:: <- begin
+{
+
+void Translate(bool isToHex, std::string& filename)
 {
 	std::fstream f;
 	f.open(filename, f.in);
@@ -68,7 +71,7 @@ void Translate(bool isToHex, std::string filename)
 		// Read from File
 		std::string filetext {};
 		std::string tmp {};
-		while (std::getline(f, tmp))
+		while (std::getline(f, tmp, (char)0x1f))
 			filetext += tmp;
 		f.close();
 

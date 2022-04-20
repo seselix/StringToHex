@@ -1,1 +1,3 @@
-This is to be translated!
+This is text to be converted!
+	This is text with a tab to be converted!
+Note that this can only use ASCII characters
