@@ -10,7 +10,7 @@ $ make
 or
 
 ```bash
-$ g++ -o stx.exe stx.cpp
+$ g++ -o stx.exe main.cpp
 ```
 
 Use:
